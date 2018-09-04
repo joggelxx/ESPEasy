@@ -68,15 +68,15 @@ boolean Plugin_090(byte function, struct EventStruct *event, String& string)
       	addFormNumericBox(F("Filter Time (mSec)"), F("plugin_090")
       			, Settings.TaskDevicePluginConfig[event->TaskIndex][0]);
 
-        byte choice = Settings.TaskDevicePluginConfig[event->TaskIndex][1];
-        /*byte choice2 = Settings.TaskDevicePluginConfig[event->TaskIndex][2];
+        /*byte choice = Settings.TaskDevicePluginConfig[event->TaskIndex][1];
+        byte choice2 = Settings.TaskDevicePluginConfig[event->TaskIndex][2];
         String options[4] = { F("Delta"), F("Delta/Total/Time"), F("Total"), F("Delta/Total") };
         addFormSelector(F("Counter Type"), F("plugin_090_countertype"), 4, options, NULL, choice );
 
         if (choice !=0)
-          addHtml(F("<span style=\"color:red\">Total count is not persistent!</span>"));*/
+          addHtml(F("<span style=\"color:red\">Total count is not persistent!</span>"));
 
-        /*String modeRaise[4];
+        String modeRaise[4];
         modeRaise[0] = F("LOW");
         modeRaise[1] = F("CHANGE");
         modeRaise[2] = F("RISING");
@@ -89,6 +89,8 @@ boolean Plugin_090(byte function, struct EventStruct *event, String& string)
 
         addFormSelector(F("Mode Type"), F("plugin_090_raisetype"), 4, modeRaise, modeValues, choice2 );*/
 
+        byte choice = Settings.TaskDevicePluginConfig[event->TaskIndex][1];
+
         String pulseStartName[2];
         pulseStartName[0] = F("RISING");
         pulseStartName[1] = F("FALLING");
@@ -96,7 +98,7 @@ boolean Plugin_090(byte function, struct EventStruct *event, String& string)
         pulseStartValue[0] = RISING;
         pulseStartValue[1] = FALLING;
 
-        addFormSelector(F("Pulse starts on"), F("plugin_090_pulsestarttype"), 2, pulseStartName, pulseStartValue, choice2 );
+        addFormSelector(F("Pulse starts on"), F("plugin_090_pulsestarttype"), 2, pulseStartName, pulseStartValue, choice );
 
         success = true;
         break;
@@ -105,8 +107,8 @@ boolean Plugin_090(byte function, struct EventStruct *event, String& string)
     case PLUGIN_WEBFORM_SAVE:
       {
         Settings.TaskDevicePluginConfig[event->TaskIndex][0] = getFormItemInt(F("plugin_090"));
-        Settings.TaskDevicePluginConfig[event->TaskIndex][1] = getFormItemInt(F("plugin_090_countertype"));
-        Settings.TaskDevicePluginConfig[event->TaskIndex][2] = getFormItemInt(F("plugin_090_pulsestarttype"));
+        //Settings.TaskDevicePluginConfig[event->TaskIndex][1] = getFormItemInt(F("plugin_090_countertype"));
+        Settings.TaskDevicePluginConfig[event->TaskIndex][1] = getFormItemInt(F("plugin_090_pulsestarttype"));
         success = true;
         break;
       }
@@ -195,7 +197,7 @@ void Plugin_090_pulsecheck(byte Index)
 {
 
   bool pulseStart = digitalRead(Settings.TaskDevicePin1[event->TaskIndex])
-    != Settings.TaskDevicePluginConfig[event->TaskIndex][2] == FALLING;
+    != Settings.TaskDevicePluginConfig[event->TaskIndex][1] == FALLING;
 
   if (pulseStart)
     {
