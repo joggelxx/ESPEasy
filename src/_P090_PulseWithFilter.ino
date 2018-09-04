@@ -196,16 +196,20 @@ boolean Plugin_090(byte function, struct EventStruct *event, String& string)
 void Plugin_090_pulsecheck(byte Index)
 {
 
-  bool pulseStart = digitalRead(Settings.TaskDevicePin1[event->TaskIndex])
-    != Settings.TaskDevicePluginConfig[event->TaskIndex][1] == FALLING;
+  bool pulseStart = bool(digitalRead(Settings.TaskDevicePin1[Index]))
+    != bool(Settings.TaskDevicePluginConfig[Index][1] == FALLING);
+
+  const unsigned long PulseTime=timePassedSince(Plugin_090_pulseTimePrevious[Index]);
 
   if (pulseStart)
     {
-      Plugin_090_pulseTimePrevious[Index]=millis();
+      if(PulseTime > (unsigned long)Settings.TaskDevicePluginConfig[Index][0])
+        {
+          Plugin_090_pulseTimePrevious[Index]=millis();
+        }
     }
   else
     {
-      const unsigned long PulseTime=timePassedSince(Plugin_090_pulseTimePrevious[Index]);
       if(PulseTime > (unsigned long)Settings.TaskDevicePluginConfig[Index][0])
         {
           Plugin_090_pulseCounter[Index]++;
