@@ -25,6 +25,7 @@ unsigned long Plugin_090_pulseCounter[TASKS_MAX];
 unsigned long Plugin_090_pulseFiltered[TASKS_MAX];
 unsigned long Plugin_090_pulseTime[TASKS_MAX];
 unsigned long Plugin_090_pulseTimePrevious[TASKS_MAX];
+byte Plugin_090_pulseState[TASKS_MAX];
 
 boolean Plugin_090(byte function, struct EventStruct *event, String& string)
 {
@@ -138,6 +139,7 @@ boolean Plugin_090(byte function, struct EventStruct *event, String& string)
         log += Settings.TaskDevicePin1[event->TaskIndex];
         addLog(LOG_LEVEL_INFO,log);
         pinMode(Settings.TaskDevicePin1[event->TaskIndex], INPUT_PULLUP);
+        Plugin_090_pulseState[event->TaskIndex] = false;
         //success = Plugin_090_pulseinit(Settings.TaskDevicePin1[event->TaskIndex], event->TaskIndex,Settings.TaskDevicePluginConfig[event->TaskIndex][2]);
         success = Plugin_090_pulseinit(Settings.TaskDevicePin1[event->TaskIndex], event->TaskIndex,CHANGE);
         break;
@@ -196,17 +198,17 @@ boolean Plugin_090(byte function, struct EventStruct *event, String& string)
 void Plugin_090_pulsecheck(byte Index)
 {
 
-  bool pulseStart = bool(digitalRead(Settings.TaskDevicePin1[Index]))
-    != bool(Settings.TaskDevicePluginConfig[Index][1] == FALLING);
+  /*bool pulseStart = bool(digitalRead(Settings.TaskDevicePin1[Index]))
+    != bool(Settings.TaskDevicePluginConfig[Index][1] == FALLING);*/
 
   const unsigned long PulseTime=timePassedSince(Plugin_090_pulseTimePrevious[Index]);
 
-  if (pulseStart)
+  if (!Plugin_090_pulseState[Index)
     {
-      if(PulseTime > (unsigned long)Settings.TaskDevicePluginConfig[Index][0])
-        {
+      //if(PulseTime > (unsigned long)Settings.TaskDevicePluginConfig[Index][0])
+      //  {
           Plugin_090_pulseTimePrevious[Index]=millis();
-        }
+      //  }
     }
   else
     {
@@ -220,6 +222,7 @@ void Plugin_090_pulsecheck(byte Index)
           Plugin_090_pulseFiltered[Index]++;
         }
     }
+  Plugin_090_pulseState[Index] = !Plugin_090_pulseState[Index];
 }
 
 
